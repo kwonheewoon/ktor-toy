@@ -5,10 +5,11 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Application.configureRouting() {
+fun Application.configureRouting(userRepository: UserRepository) {
     routing {
-        post("/") {
+        post("/users") {
             val user = call.receive<User>()
+            userRepository.createUser(user.name, user.email)
             call.respondText("User = $user")
         }
     }

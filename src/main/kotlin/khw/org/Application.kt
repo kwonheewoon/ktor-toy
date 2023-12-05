@@ -8,8 +8,12 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import khw.org.plugins.*
+import org.koin.dsl.module
+import org.koin.ktor.ext.get
+import org.koin.ktor.plugin.Koin
 
 fun main() {
+    DatabaseFactory.init()
     embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
         .start(wait = true)
 }
@@ -17,12 +21,19 @@ fun main() {
 fun Application.module() {
     install(ContentNegotiation) {
         jackson {
-            // customize the Jackson serializer as usual
             configure(SerializationFeature.INDENT_OUTPUT, true)
             setDefaultPrettyPrinter(DefaultPrettyPrinter().apply {
                 indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
             })
         }
     }
-    configureRouting()
+    install(Koin) {
+        modules(myModule)
+    }
+    configureRouting(get())
+}
+
+
+val myModule = module {
+    single { UserRepository() }
 }
