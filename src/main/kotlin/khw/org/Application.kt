@@ -8,6 +8,9 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import khw.org.plugins.*
+import khw.org.repository.UserRepository
+import khw.org.route.userRouting
+import khw.org.service.UserService
 import org.koin.dsl.module
 import org.koin.ktor.ext.get
 import org.koin.ktor.plugin.Koin
@@ -30,10 +33,11 @@ fun Application.module() {
     install(Koin) {
         modules(myModule)
     }
-    configureRouting(get())
+    userRouting(get())
 }
 
 
 val myModule = module {
+    single { UserService(get()) }
     single { UserRepository() }
 }
